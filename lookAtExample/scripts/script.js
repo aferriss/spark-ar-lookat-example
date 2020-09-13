@@ -4,7 +4,7 @@ const Time = require("Time");
 
 // Finds an array of elements in the scene
 // - Parameters:
-//      assets: An array with the names of the objects to find
+//      objects: An array with the names of the objects to find
 const find = objects => Promise.all(objects.map(o => S.root.findFirst(o))).then(objects => { return objects });
 
 // Gets the position of an object as an R.point
@@ -41,11 +41,10 @@ find([
   'followNull',
   'targetNull'
 ]).then(objects => {
-  // Random animation
   const plane = objects[0];
   const followNull = objects[1];
   const targetNull = objects[2];
-
+  // Random animation
   const scl = R.val(0.1);
   targetNull.transform.x = R.sin(Time.ms.mul(R.val(0.001))).mul(scl);
   targetNull.transform.y = R.cos(Time.ms.mul(R.val(0.0007))).mul(scl);
