@@ -2,10 +2,10 @@ const S = require("Scene");
 const R = require("Reactive");
 const Time = require("Time");
 
-// Finds an element in the scene
+// Finds an array of elements in the scene
 // - Parameters:
-//      e: The object to find
-const find = e => S.root.find(e);
+//      assets: An array with the names of the objects to find
+const find = objects => Promise.all(objects.map(o => S.root.findFirst(o))).then(objects => { return objects });
 
 // Gets the position of an object as an R.point
 // - Parameters:
@@ -36,23 +36,38 @@ const lookAt = (_target, _lookerParent, _looker) => {
   setRotation(_looker, lookAtTransform);
 };
 
-const plane = find("plane0");
-const followNull = find("followNull");
-const targetNull = find("targetNull");
+find([
+  'plane0',
+  'followNull',
+  'targetNull'
+]).then(objects => {
+  // Random animation
+  const plane = objects[0];
+  const followNull = objects[1];
+  const targetNull = objects[2];
 
-// Random animation
-const scl = R.val(0.1);
-targetNull.transform.x = R.sin(Time.ms.mul(R.val(0.001))).mul(scl);
-targetNull.transform.y = R.cos(Time.ms.mul(R.val(0.0007))).mul(scl);
-targetNull.transform.z = R.sin(Time.ms.mul(R.val(0.0005))).mul(scl);
+  const scl = R.val(0.1);
+  targetNull.transform.x = R.sin(Time.ms.mul(R.val(0.001))).mul(scl);
+  targetNull.transform.y = R.cos(Time.ms.mul(R.val(0.0007))).mul(scl);
+  targetNull.transform.z = R.sin(Time.ms.mul(R.val(0.0005))).mul(scl);
 
-// Do the look at
-lookAt(targetNull, followNull, plane);
+  // Do the look at
+  lookAt(targetNull, followNull, plane);
 
-// Here's a simpler implementation without the helper functions
-// const lookAtPt = R.point(targetNull.transform.x, targetNull.transform.y, targetNull.transform.z);
-// const lookAtTransform = followNull.transform.lookAt(lookAtPt);
+  // // Random animation
+  // const scl = R.val(0.1);
+  // targetNull.transform.x = R.sin(Time.ms.mul(R.val(0.001))).mul(scl);
+  // targetNull.transform.y = R.cos(Time.ms.mul(R.val(0.0007))).mul(scl);
+  // targetNull.transform.z = R.sin(Time.ms.mul(R.val(0.0005))).mul(scl);
 
-// plane.transform.rotationX = lookAtTransform.rotationX;
-// plane.transform.rotationY = lookAtTransform.rotationY;
-// plane.transform.rotationZ = lookAtTransform.rotationZ;
+  // // Do the look at
+  // lookAt(targetNull, followNull, plane);
+
+  // Here's a simpler implementation without the helper functions
+  // const lookAtPt = R.point(targetNull.transform.x, targetNull.transform.y, targetNull.transform.z);
+  // const lookAtTransform = followNull.transform.lookAt(lookAtPt);
+
+  // plane.transform.rotationX = lookAtTransform.rotationX;
+  // plane.transform.rotationY = lookAtTransform.rotationY;
+  // plane.transform.rotationZ = lookAtTransform.rotationZ;
+});
